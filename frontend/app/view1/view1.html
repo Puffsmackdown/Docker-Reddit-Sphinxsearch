@@ -1,0 +1,88 @@
+<div>
+    <form ng-submit="submitCommentForm();">
+        <fieldset>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">Query</span>
+                <input ng-model="commentForm.q" type="text" class="form-control" placeholder="Query" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">Author</span>
+                <input ng-model="commentForm.author" type="text" class="form-control" placeholder="Author" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">Subreddit</span>
+                <input ng-model="commentForm.subreddit" type="text" class="form-control" placeholder="Subreddit" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">Link ID</span>
+                <input ng-model="commentForm.link_id" type="text" class="form-control" placeholder="Link ID" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">Older than</span>
+                <input ng-model="commentForm.before" type="number" class="form-control" placeholder="Before" aria-describedby="basic-addon1">
+                <select ng-model="commentForm.beforeType" ng-options='option.value as option.name for option in [{"name": "Minutes", "value": "m"}, {"name": "Days", "value": "d"}, {"name": "Weeks", "value": "w"}]'></select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">Newer than</span>
+                <input ng-model="commentForm.after" type="number" class="form-control" placeholder="After" aria-describedby="basic-addon1">
+                <select ng-model="commentForm.afterType" ng-options='option.value as option.name for option in [{"name": "Minutes", "value": "m"}, {"name": "Days", "value": "d"}, {"name": "Weeks", "value": "w"}]'></select>
+            </div>
+        </fieldset>
+
+        <input type="submit" class="btn">
+    </form>
+</div>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead ng-if="commentResults.length !== 0 && commentResults.data">
+        <tr>
+            <td width="10%">
+                Author
+            </td>
+            <td width="10%">
+                Subreddit
+            </td>
+            <td width="10%">
+                Date
+            </td>
+            <td width="70%">
+                Comment
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-if="commentResults.length !== 0 && commentResults.data">
+            <td colspan="4">
+                Retrieved {{ commentResults.metadata.results }} comments in {{ commentResults.metadata.time }} seconds.
+            </td>
+        </tr>
+        <tr ng-repeat="comment in commentResults.data">
+            <td>
+                <a ng-href="https://www.reddit.com/user/{{ comment.author }}/" target="_blank">
+                    {{ comment.author }}
+                </a>
+            </td>
+            <td>
+                <a ng-href="https://www.reddit.com/r/{{ comment.subreddit }}/" target="_blank">
+                    {{ comment.subreddit }}
+                </a>
+            </td>
+            <td>
+                {{ comment.created_utc * 1000 | date: "short" }}
+            </td>
+            <td>
+                <p ng-bind-html="comment.body_html"></p>
+                <a ng-href="https://www.reddit.com/r/{{ comment.subreddit }}/comments/{{ comment.link_id.substr(3, 8) }}/filler/{{ comment.id }}?context=5" target="_blank">
+                    <small>
+                        Source
+                    </small>
+                </a>
+            </td>
+        </tr>
+        <tr ng-if="(commentResults.length === 0 || !commentResults.data) && commentResults.metadata">
+            <td colspan="4">
+                There are no comments found in these results.
+            </td>
+        </tr>
+    </tbody>
+</table>
